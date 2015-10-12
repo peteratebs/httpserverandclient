@@ -1,0 +1,232 @@
+<title> EBS HTTP Library Reference </title>
+</head>
+<body bgcolor=#bbbbbb>
+
+<style>
+HR { visibility: hidden }
+A:visited { color: #a43; }
+A:link { color: #14a; }
+IMG:link { border: none; }
+PRE { background-color: #d9e0e3; font-size: 8pt; }
+
+</style>
+
+<table border=0 cellpadding=5 cellspacing=0 width=750>
+<tr><td>
+<div style='
+	border: 1px solid black;
+	background-color: white;
+	background-image: URL("background_small.jpeg");
+	background-repeat: repeat-x;'>
+
+<table border=0 cellpadding=0 cellspacing=0>
+<tr>
+<td valign=top rowspan=3 width=45><a href='index.html'><img src='sidebar.jpg' border=0></a></td>
+<td colspan=2 height=8>&nbsp;</td>
+</tr>
+<tr>
+<td style='font-family: arial narrow, arial, sans-serif; ' width=747>
+<a href='http://www.aicp.co.jp/' target='_blank'><img border=0 src='ebsnet.gif' align=right></a>
+
+
+<H2> <A HREF="#DOC.DOCU">Web server example</A></H2></H2><BLOCKQUOTE>Starts a simple web server. </BLOCKQUOTE>
+<A NAME="DOC.DOCU"></A>
+<BLOCKQUOTE>
+This code demonstrates the necessary steps to start a web server and assign as
+default root. It also demonstrates how to assign callback handlers for specic URLs.
+
+<P>Note: An advanced server example named example_server_advanced.c is also included.<br>
+<br>
+
+<P><br>
+<PRE>
+/*
+|  example_server_basic.c
+|
+|  Copyright EBS Inc. , 2009. All rights reserved.
+
+<P>This source file contains an example of a simple web server application.
+
+<P>This example demonstrates the following:
+
+<P>. Configure initialize and call the web server.
+. Serve file based content from a default directory /htdocs by default.
+
+<P>&#42;/
+
+<P>/****************************************************************************&#42;/
+/* Header files
+ ****************************************************************************&#42;/
+
+<P>#include "rtpthrd.h"
+#include "rtpnet.h"
+#include "rtpterm.h"
+#include "rtpprint.h"
+#include "rtpstr.h"
+#include "httpsrv.h"
+
+<P>/****************************************************************************&#42;/
+/* Macros
+ ****************************************************************************&#42;/
+
+<P>/* Configuration parameters &#42;/
+
+<P>/* These values may be changed to customize the server. &#42;/
+#define DEMO_SERVER_NAME "EBS WEB SERVER" /* Server name that we use to format the Server property in a standard html reponse header &#42;/
+#define DEMO_WWW_ROOT "/htdocs"        /* Path used as the root for all content loads from disk. &#42;/
+#define DEMO_WWW_FILE "index.html"        /* The default file name to use if a user accesses the server providing no file name. Index.htm is recommended. &#42;/
+
+<P>static unsigned char
+DEFAULT_DEMO_IPADDRESS[] = {0,0,0,0};   /* IP address of the interface to serve content to. Set to {0,0,0,0} to
+                                           use the default interface. If you want to serve to an alternate interface
+                                           set this to the IP addres of the alternate interface (for example: {192,168,1,1}.
+                                           Note: Linux and windows do not but some emebedded network stack
+                                           implementations may require this field to be initialized.  &#42;/
+
+<P>#define DEMO_MAX_CONNECTIONS 8		   /* Configure the maximum number of simultaneously connected/queued for acceptance &#42;/
+
+<P>#define DEMO_IPVERSION 4               /* Do not change. The API supports V6 but the demo is wired for V4 right now &#42;/
+#define DEMO_MAX_HELPERS 1             /* Do not change. Number of helper threads to spawn. Must be 1. &#42;/
+
+<P>
+/****************************************************************************&#42;/
+/* Function Prototypes
+/****************************************************************************&#42;/
+
+<P>
+/* Utility functions used by this example &#42;/
+
+<P>/****************************************************************************&#42;/
+/* Data
+ ****************************************************************************&#42;/
+
+<P> /* A context structure for keeping our application data. This structure is not required by the library, it only used by the example. &#42;/
+typedef struct s_HTTPExampleServerCtx
+{
+	HTTP_UINT8         rootDirectory[256];
+	HTTP_UINT8         defaultFile[256];
+  	HTTP_BOOL          disableVirtualIndex;
+  	HTTP_BOOL          chunkedEncoding;
+	HTTP_INT16         numHelperThreads;
+	HTTP_INT16         numConnections;
+	HTTP_UINT8         defaultIpAddr[4];
+	HTTPServerConnection* connectCtxArray;
+	HTTPServerContext  httpServer;
+  	HTTP_BOOL          ModuleRequestingReload;
+} HTTPExampleServerCtx;
+
+<P>HTTPExampleServerCtx ExampleServerCtx;
+
+<P>/****************************************************************************&#42;/
+/* Function Definitions
+ ****************************************************************************&#42;/
+
+<P>/* Main entry point for the web server application.
+	A callable web server.
+&#42;/
+
+<P>int http_server_demo(void)
+{
+	HTTP_UINT8     *pDefaultIpAddr;
+	int idle_count = 0;
+	rtp_net_init();
+	rtp_threads_init();
+
+<P>	/* Set initial default values &#42;/
+	rtp_memset(&ExampleServerCtx, 0, sizeof(ExampleServerCtx));
+	rtp_strcpy(ExampleServerCtx.rootDirectory, DEMO_WWW_ROOT);
+	rtp_strcpy(ExampleServerCtx.defaultFile,DEMO_WWW_FILE);
+	ExampleServerCtx.chunkedEncoding 		= 0;
+	ExampleServerCtx.numHelperThreads 		= DEMO_MAX_HELPERS;
+	ExampleServerCtx.numConnections		 	= DEMO_MAX_CONNECTIONS;
+	/* If these are {0,0,0,0} use the default interface otherwise we use the configured address &#42;/
+	ExampleServerCtx.defaultIpAddr[0] = DEFAULT_DEMO_IPADDRESS[0];
+	ExampleServerCtx.defaultIpAddr[1] = DEFAULT_DEMO_IPADDRESS[1];
+	ExampleServerCtx.defaultIpAddr[2] = DEFAULT_DEMO_IPADDRESS[2];
+	ExampleServerCtx.defaultIpAddr[3] = DEFAULT_DEMO_IPADDRESS[3];
+
+<P>	rtp_printf("Using IP address %d.%d.%d.%d (all zeroes means use default interface) \n",
+		ExampleServerCtx.defaultIpAddr[0],	ExampleServerCtx.defaultIpAddr[1],
+		ExampleServerCtx.defaultIpAddr[2],	ExampleServerCtx.defaultIpAddr[3]);
+
+<P>	/* Initialize the server &#42;/
+	/* The demo uses 0,0,0,0 to signify use default but the API uses a null pointer so
+	   map the demo methodology to the API metodology &#42;/
+	if (ExampleServerCtx.defaultIpAddr[0] == 0 &&
+		ExampleServerCtx.defaultIpAddr[1] == 0 &&
+		ExampleServerCtx.defaultIpAddr[2] == 0 &&
+		ExampleServerCtx.defaultIpAddr[3] == 0)
+		pDefaultIpAddr = 0;
+	else
+		pDefaultIpAddr = &ExampleServerCtx.defaultIpAddr[0];
+
+<P>	rtp_printf("Starting or restarting server \n");
+
+<P>	/* Allocate and clear one server context per possible simultaneous connection. see (DEMO_MAX_CONNECTIONS) &#42;/
+	if (!ExampleServerCtx.connectCtxArray)
+	{
+		ExampleServerCtx.connectCtxArray = (HTTPServerConnection*) rtp_malloc(sizeof(HTTPServerConnection) * ExampleServerCtx.numConnections);
+		if (!ExampleServerCtx.connectCtxArray)
+			return -1;
+	}
+	rtp_memset(ExampleServerCtx.connectCtxArray,0, sizeof(HTTPServerConnection) * ExampleServerCtx.numConnections);
+
+<P>	/* Initialize the server &#42;/
+	if (HTTP_ServerInit (
+			&ExampleServerCtx.httpServer,
+			DEMO_SERVER_NAME, // name
+			ExampleServerCtx.rootDirectory,    // rootDir
+			ExampleServerCtx.defaultFile,      // defaultFile
+			1,                // httpMajorVersion
+			1,                // httpMinorVersion
+			pDefaultIpAddr,
+			80,               // 80  ?? Use the www default port
+			DEMO_IPVERSION,   // ipversion type(4 or 6)
+			0,                // allowKeepAlive
+			ExampleServerCtx.connectCtxArray,  // connectCtxArray
+			ExampleServerCtx.numConnections,   // maxConnections
+			ExampleServerCtx.numHelperThreads  // maxHelperThreads
+		) < 0)
+		return -1;
+
+<P>	/* Now loop continuously process one request per loop. &#42;/
+	for (;;)
+	{
+		if (HTTP_ServerProcessOneRequest (&ExampleServerCtx.httpServer, 1000*60) < 0)
+		{
+			/* Print an idle counter every minute the server is not accessed &#42;/
+			idle_count += 1;
+			if (idle_count == 1)
+				rtp_printf("\n Idle %d minutes      ", idle_count);
+			else
+				rtp_printf("                                     \r Idle %d minutes", idle_count);
+		}
+		else
+			idle_count = 0;
+	}
+	rtp_net_exit();
+	return (0);
+}
+
+<P></PRE>
+
+<P></BLOCKQUOTE>
+<DL><DT><DD></DL><P><P><I><A HREF="index.html">Alphabetic index</A></I></P><HR>
+</td>
+<td rowspan=2 width=8>&nbsp;</td>
+</tr>
+<tr>
+<td>
+<center><img border=0 src='centerline.gif'></center><br>
+<i>Copyright EBS Inc, 1993-2013.<br>All rights reserved.<br>
+This document may not be redistributed in any form without the consent of EBS, Inc.</i><br>
+<font size=-1 face=arial><a href='http://www.aicp.co.jp' target=_blank>www.aicp.co.jp</a></font>
+</td>
+</tr>
+<tr>
+<td height=8 colspan=2>&nbsp;</td>
+</tr>
+
+</table>
+</div>
+</tr></td></table>

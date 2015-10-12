@@ -1,0 +1,221 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script>
+var ntimes=0;
+var LastPostedValue=0;
+function slider_change(val){
+     document.getElementById('slider_value').innerHTML=val;
+     document.getElementById("AjaxSetVal").value = val;
+     doPost();
+}
+
+var xmlhttp;
+/* This is run on a timer */
+function AjaxUpdate()
+{   /* Query the slider value on the timer and update the local value, more responsive than waiting for it to stop */
+    if (LastPostedValue != document.getElementById("slider").value)
+    {
+        slider_change(document.getElementById("slider").value);
+        setTimeout("AjaxUpdate()", 100);
+        return;
+    }
+    /* Create an xmlhttp object if needed */
+    if (!xmlhttp)
+    {
+        if (window.XMLHttpRequest)
+        {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp=new XMLHttpRequest();
+        }
+        else
+        {// code for IE6, IE5
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        /* When data is recieved the text and rectangle boces are updated */
+        xmlhttp.onreadystatechange=function()
+        {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+            {
+            var n;
+            var str;
+                document.getElementById("myDiv").innerHTML =  xmlhttp.responseText;
+                document.getElementById("myDiv").innerHTML =  "<quote>"+"test"+xmlhttp.responseText+"</quote>"
+                str = xmlhttp.responseText;
+                n=str.search("PanelValue");
+                // n=str.search("PanelValue \x5b");   /* \x5b == [ */
+                if (n > 0)
+                {   /* Extract the value from PanelValue [ddd] factor it the same as when displayed and graph it */
+                    var s="PanelValue";
+                    var c,v,i;
+                    c = str.slice(n+s.length+2);
+                    v=c.split("\x5d");
+                    i = v[0]*4;
+                    Html5Example(i/2,i/4)
+                }
+
+            }
+        }
+    }
+    /* Issue a get on demo_ajax_getval to retrieve the value */
+    xmlhttp.open("GET","demo_ajax_getval",true);
+    xmlhttp.send("I%20sent%20ome%20stuff%20to%20you");
+    setTimeout("AjaxUpdate()", 100);
+}
+
+
+function ajaxRequest(){
+ var activexmodes=["Msxml2.XMLHTTP", "Microsoft.XMLHTTP"]; //activeX versions to check for in IE
+ if (window.ActiveXObject){ //Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
+  for (var i=0; i<activexmodes.length; i++){
+   try{
+    return new ActiveXObject(activexmodes[i]);
+   }
+   catch(e){
+    //suppress error
+   }
+  }
+ }
+ else if (window.XMLHttpRequest) // if Mozilla, Safari etc
+  return new XMLHttpRequest();
+ else
+  return false ;
+}
+
+var mypostrequest=new ajaxRequest();
+mypostrequest.onreadystatechange=function(){
+ if (mypostrequest.readyState==4){
+  if (mypostrequest.status==200 || mypostrequest.status==201 || window.location.href.indexOf("http")==-1){
+     document.getElementById('ajax_value').innerHTML=mypostrequest.responseText;
+     console.log("response == :" + mypostrequest.responseText);
+     Html5Example(mypostrequest.responseText/2,mypostrequest.responseText/4)
+  }
+ }
+}
+
+function doPost()
+{
+var value=encodeURIComponent(document.getElementById("AjaxSetVal").value);
+var parameters="AjaxSetVal="+value;
+    LastPostedValue=value;
+    mypostrequest.open("POST", "http://localhost/demo_ajax_setval_submit", true);
+    mypostrequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    mypostrequest.send(parameters);
+}
+
+var current_xval=0;
+var current_yoff=10;
+var current_yval=0;
+
+function Html5PlotExample(xval,yval)
+{
+   var ctx;
+   var c;
+   c=document.getElementById("myPlotCanvas");
+   ctx = c.getContext("2d");
+   ctx.fillStyle="#FF0000";
+   ctx.beginPath();
+   ctx.moveTo(current_xval,current_yval+current_yoff);
+   ctx.strokeStyle="red";
+   ctx.lineTo(xval,yval+current_yoff);
+   ctx.stroke();
+   if (xval == 0 && current_xval != 0)
+   {
+     current_yoff += 10;
+     current_xval = 0;
+     current_yval = 0;
+   }
+   else
+   {
+     current_xval = xval;
+     current_yval = yval;
+   }
+}
+var data_points = [
+  {"x":0, "y":0},
+  {"x":10, "y":30},
+  {"x":20, "y":50},
+  {"x":30, "y":90},
+  {"x":40, "y":60},
+  {"x":50, "y":20},
+  {"x":60, "y":10},
+]
+
+var json = '[{"x":0, "y":0},{"x":0, "y":130},{"x":20, "y":150},{"x":30, "y":190},{"x":40, "y":160},{"x":50, "y":120},{"x":60, "y":110}]'
+
+function Html5Test()
+{
+  Html5PlotExample(data_points[0].x,data_points[0].y)
+  Html5PlotExample(data_points[1].x,data_points[1].y)
+  Html5PlotExample(data_points[2].x,data_points[2].y)
+  Html5PlotExample(data_points[3].x,data_points[3].y)
+  Html5PlotExample(data_points[4].x,data_points[4].y)
+  Html5PlotExample(data_points[5].x,data_points[5].y)
+  Html5PlotExample(data_points[6].x,data_points[6].y)
+
+  var data_obj = JSON.parse(json);
+  Html5PlotExample(data_obj[0].x,data_obj[0].y)
+  Html5PlotExample(data_obj[1].x,data_obj[1].y)
+  Html5PlotExample(data_obj[2].x,data_obj[2].y)
+  Html5PlotExample(data_obj[3].x,data_obj[3].y)
+  Html5PlotExample(data_obj[4].x,data_obj[4].y)
+  Html5PlotExample(data_obj[5].x,data_obj[5].y)
+  Html5PlotExample(data_obj[6].x,data_obj[6].y)
+
+
+}
+
+function Html5Example(xval,yval,thestring)
+{
+   var ctx;
+   var c;
+   c=document.getElementById("myCanvas");
+   ctx = c.getContext("2d");
+   ctx.fillStyle="#FFFFFF";
+   ctx.fillRect(0,0,200,300);
+   ctx.fillStyle="#FF0000";
+   ctx.fillRect(0,0,xval,yval);
+   ctx.font="20px Georgia";
+   ctx.strokeText("Hello World!"+thestring+","+current_yoff,10,50);
+//   Html5PlotExample(xval,yval);
+}
+</script>
+</head>
+<body onload="setTimeout('AjaxUpdate()', 100);"/>
+
+<h3>This text was is send from the server using Ajax.</h3>
+<div id="myDiv"><h2>From Server</h2></div>
+
+<h3>Move the slider to update the server and retrieve new calculated values.</h3>
+
+<input type="range" id="slider" min="0" max="100" value="50"
+    step="2" onChange="slider_change(this.value)" />
+<br/><br/>
+Slider value :  <span id="slider_value" >50</span>
+<br>
+<br><br>
+Slider Value Locally Reported:<input type="text" name="AjaxSetVal" id="AjaxSetVal" value="+100">
+<h3>
+Slider value times four, calculated on the server and sent by Ajax
+</h3>
+<span id="ajax_value" >0</span>
+<h3>
+<div>
+Rectangle drawn on HTML5 Canvas element.<br>The Rectangle size is updated from data recieved from Ajax.
+<br>
+</h3>
+<canvas id="myCanvas" width="200" height="100"
+style="border:1px solid #0000ff;">
+</canvas>
+</div>
+
+<div>
+Plot drawn on HTML5 Canvas.<br>
+<canvas id="myPlotCanvas" width="500" height="250"
+style="border:1px solid #0000ff;">
+</canvas>
+</div>
+<script>
+Html5Test();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+﻿Build started 10/12/2015 7:19:29 AM.
+     1>Project "C:\0a_share_with_virtual_box\ebs\gitsources\httpserverandclient\http\v0.2.6\project\msvs.net2010\win32\serverdemo\serverdemo.vcxproj" on node 2 (clean target(s)).
+     1>_PrepareForClean:
+         Deleting file ".\Debug\ServerDemo.lastbuildstate".
+     1>Done Building Project "C:\0a_share_with_virtual_box\ebs\gitsources\httpserverandclient\http\v0.2.6\project\msvs.net2010\win32\serverdemo\serverdemo.vcxproj" (clean target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.08

@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>ServerDemo</ProjectName>
+    <ProjectGuid>{BA588930-FF0A-4B13-A016-913A211A4284}</ProjectGuid>
+    <SccProjectName />
+    <SccLocalPath />
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</IntDir>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\..\..\ixml\v1.2\inc;..\..\..\..\..\..\ixml\v1.2\src\inc;..\..\..\..\..\..\http\v0.2.5\include;..\..\..\..\..\..\rtplatform\v0.4.2\include\ms32;..\..\..\..\..\..\rtplatform\v0.4.2\include;..\..\..\..\include\controlPoint;..\..\..\..\include\device;\OpenSSL-Win32\include;$(SystemDrive)\Program Files\Phidgets;..\..\..\..\..\..\..\kiss_fft130;..\..\..\..\..\..\..\kiss_fft130\tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;strncasecmp=strnicmp;HTTP_MANAGED_CLIENT_INCLUDE_SSL_NOT=1;_CRT_SECURE_NO_WARNINGS=1;DATATYPE=double;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>
+      </PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;\OpenSSL-Win32\lib\vc\ssleay32MTd.lib;..\..\..\..\..\..\openssl\openssl32.lib;oldnames.lib;$(SystemDrive)\Program Files\Phidgets\phidget21.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Debug/ServerDemo.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapExports>false</MapExports>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <LinkErrorReporting>QueueForNextLogin</LinkErrorReporting>
+      <IgnoreSpecificDefaultLibraries>LIBC.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <Midl>
+      <TypeLibraryName>.\Debug/UPnP Device Demo.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/GL /O2 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MinSpace</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\..\..\ixml\v1.2\inc;..\..\..\..\..\..\ixml\v1.2\src\inc;..\..\..\..\..\..\http\v0.2.5\include;..\..\..\..\..\..\rtplatform\v0.4.2\include\ms32;..\..\..\..\..\..\rtplatform\v0.4.2\include;..\..\..\..\include\controlPoint;..\..\..\..\include\device;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;strncasecmp=strnicmp;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <StructMemberAlignment>1Byte</StructMemberAlignment>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\Release/UPnP Device Demo.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Release/UPnP Device Demo.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ProgramDatabaseFile>.\Release/UPnP Device Demo.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>.\Release/UPnP Device Demo.map</MapFileName>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Midl>
+      <TypeLibraryName>.\Release/UPnP Device Demo.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\openssl\rtpssl.c" />
+    <ClCompile Include="..\..\..\..\examples\example_server_advanced.c" />
+    <ClCompile Include="..\..\..\..\source\httpauth.c" />
+    <ClCompile Include="..\..\..\..\source\httpscli.c" />
+    <ClCompile Include="..\..\..\..\source\httpssrv.c" />
+    <ClCompile Include="..\..\..\..\source\md5.c" />
+    <ClCompile Include="serverdemo.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtp.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpchar.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpdate.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpdebug.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpdobj.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpdutil.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpfile.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpgui.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtphelper.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtplog.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpmem.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpnet.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpnetsm.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpprint.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpscnv.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpsignl.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpstdup.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpstr.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpterm.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpthrd.c" />
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtptime.c" />
+    <ClCompile Include="..\..\..\..\source\fileext.c" />
+    <ClCompile Include="..\..\..\..\source\filetype.c" />
+    <ClCompile Include="..\..\..\..\source\httmlutils.c" />
+    <ClCompile Include="..\..\..\..\source\httpp.c" />
+    <ClCompile Include="..\..\..\..\source\httpsrv.c" />
+    <ClCompile Include="..\..\..\..\source\httpsrvframework.c" />
+    <ClCompile Include="..\..\..\..\examples\example_client.c" />
+    <ClCompile Include="..\..\..\..\examples\example_server.c" />
+    <ClCompile Include="..\..\..\..\source\httpcli.c" />
+    <ClCompile Include="..\..\..\..\source\httpmcli.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

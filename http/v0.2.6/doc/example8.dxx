@@ -1,0 +1,18 @@
+/**
+ @name Advanced Web server example
+ @memo Starts a web server and demonstrate implementing custom request handlers.
+ @doc  This code demonstrates the necessary steps to start an advanced web server application.
+
+ <ul>
+<li>How to display dynamically inserted web pages from a virtual file table.</li>
+<li>How to assign callback handlers to handle specific Urls.</li>
+<li>How to process form data sent by a POST.</li>
+<li>How to save uploaded file data.</li>
+<li>How to use Ajax to dynamically update HTML elements from dynamic server content.</li>
+ </ul>
+
+ <pre>
+          The advanced web server example is still under development. Inspect the examples directory for the lastest source code
+</pre>
+
+ */

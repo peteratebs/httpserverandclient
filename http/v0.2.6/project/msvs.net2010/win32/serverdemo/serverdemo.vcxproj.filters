@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6f7eff89-290d-40b7-a74b-7c9e3497f9ea}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\rtplatform">
+      <UniqueIdentifier>{4a43a873-601d-4d9a-9d16-28cdeb6a4487}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\http">
+      <UniqueIdentifier>{dd86f352-db0a-4497-843d-7aeea66e8203}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\exampleserver">
+      <UniqueIdentifier>{d9ece925-7776-41b0-8716-7f1295f0ec96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\httpcli">
+      <UniqueIdentifier>{1905d68a-aae7-4f5e-b255-0d7fbb14ee00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{d4c502d0-9b47-47ae-a057-c66f70d5d885}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{910bba9a-5d2e-4450-99a0-ba994317487f}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="serverdemo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtp.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpchar.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpdate.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpdebug.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpdobj.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpdutil.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpfile.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpgui.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtphelper.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtplog.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpmem.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpnet.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpnetsm.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpprint.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpscnv.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpsignl.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpstdup.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\generic\rtpstr.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpterm.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtpthrd.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\win32\rtptime.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\source\fileext.c">
+      <Filter>Source Files\http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\source\filetype.c">
+      <Filter>Source Files\http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\source\httmlutils.c">
+      <Filter>Source Files\http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\source\httpp.c">
+      <Filter>Source Files\http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\source\httpsrv.c">
+      <Filter>Source Files\http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\source\httpsrvframework.c">
+      <Filter>Source Files\http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\examples\example_client.c">
+      <Filter>Source Files\exampleserver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\examples\example_server.c">
+      <Filter>Source Files\exampleserver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\source\httpcli.c">
+      <Filter>Source Files\httpcli</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\source\httpmcli.c">
+      <Filter>Source Files\httpcli</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\source\httpauth.c">
+      <Filter>Source Files\http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\source\md5.c">
+      <Filter>Source Files\http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\source\httpscli.c">
+      <Filter>Source Files\http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\rtplatform\v0.4.2\source\openssl\rtpssl.c">
+      <Filter>Source Files\rtplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\source\httpssrv.c">
+      <Filter>Source Files\http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\examples\example_server_advanced.c">
+      <Filter>Source Files\exampleserver</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
