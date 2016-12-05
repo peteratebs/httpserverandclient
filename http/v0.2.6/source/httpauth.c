@@ -734,13 +734,13 @@ HTTPAuthStatus _HTTP_AuthProcessChallenge (
 										status = HTTP_AUTH_STATUS_RETRY_REQUEST;
 									}
 
-									rtp_strcpy(realm->param.digest.serverNonce, param, HTTP_CFG_MAX_NONCE_LEN-1);
+									rtp_strncpy(realm->param.digest.serverNonce, param, HTTP_CFG_MAX_NONCE_LEN-1);
 									realm->param.digest.serverNonce[HTTP_CFG_MAX_NONCE_LEN-1] = 0;
 								}
 								else if (!rtp_stricmp(name, "opaque"))
 								{
 									/* store the server's opaque value */
-									rtp_strcpy(realm->param.digest.serverOpaque, param, HTTP_CFG_MAX_OPAQUE_LEN-1);
+									rtp_strncpy(realm->param.digest.serverOpaque, param, HTTP_CFG_MAX_OPAQUE_LEN-1);
 									realm->param.digest.serverOpaque[HTTP_CFG_MAX_OPAQUE_LEN-1] = 0;
 								}
 								else if (!rtp_stricmp(name, "stale"))
@@ -960,7 +960,7 @@ HTTPAuthenticationHost * _HTTP_NewHost (
 	if (host)
 	{
 		rtp_memset(host, 0, sizeof(HTTPAuthenticationHost));
-		rtp_strcpy(host->hostName, hostName, HTTP_CFG_MAX_HOSTNAME_LEN-1);
+		rtp_strncpy(host->hostName, hostName, HTTP_CFG_MAX_HOSTNAME_LEN-1);
 		host->hostName[HTTP_CFG_MAX_HOSTNAME_LEN-1] = 0;
 		host->port = port;
 		DLLIST_INIT(&host->realmList);
@@ -1017,13 +1017,13 @@ HTTPAuthenticationRealm * _HTTP_NewRealm (
 
 		if (realmName)
 		{
-			rtp_strcpy(realm->realmName, realmName, HTTP_CFG_MAX_REALMNAME_LEN-1);
+			rtp_strncpy(realm->realmName, realmName, HTTP_CFG_MAX_REALMNAME_LEN-1);
 			realm->realmName[HTTP_CFG_MAX_REALMNAME_LEN-1] = 0;
 		}
 
 		if (path)
 		{
-			rtp_strcpy(realm->path, path, HTTP_CFG_MAX_PATH_LEN-1);
+			rtp_strncpy(realm->path, path, HTTP_CFG_MAX_PATH_LEN-1);
 			realm->path[HTTP_CFG_MAX_PATH_LEN-1] = 0;
 		}
 		else
@@ -1078,7 +1078,7 @@ void _HTTP_RealmUpdatePath (
 
 	if (!realm->path[0])
 	{
-		rtp_strcpy(realm->path, path, HTTP_CFG_MAX_PATH_LEN-1);
+		rtp_strncpy(realm->path, path, HTTP_CFG_MAX_PATH_LEN-1);
 		realm->path[HTTP_CFG_MAX_PATH_LEN-1] = 0;
 		return;
 	}
@@ -1113,7 +1113,7 @@ void _HTTP_RealmSetName (
 		HTTP_CHAR* name
 	)
 {
-	rtp_strcpy(realm->realmName, name, HTTP_CFG_MAX_REALMNAME_LEN-1);
+	rtp_strncpy(realm->realmName, name, HTTP_CFG_MAX_REALMNAME_LEN-1);
 	realm->realmName[HTTP_CFG_MAX_REALMNAME_LEN-1] = 0;
 }
 
@@ -1123,7 +1123,7 @@ void _HTTP_RealmSetUser (
 		HTTP_CHAR* user
 	)
 {
-	rtp_strcpy(realm->userName, user, HTTP_CFG_MAX_USERNAME_LEN-1);
+	rtp_strncpy(realm->userName, user, HTTP_CFG_MAX_USERNAME_LEN-1);
 	realm->userName[HTTP_CFG_MAX_USERNAME_LEN-1] = 0;
 }
 
@@ -1133,7 +1133,7 @@ void _HTTP_RealmSetPassword (
 		HTTP_CHAR* password
 	)
 {
-	rtp_strcpy(realm->password, password, HTTP_CFG_MAX_PASSWORD_LEN-1);
+	rtp_strncpy(realm->password, password, HTTP_CFG_MAX_PASSWORD_LEN-1);
 	realm->password[HTTP_CFG_MAX_PASSWORD_LEN-1] = 0;
 }
 

@@ -19,6 +19,8 @@
 /* Header files
  *****************************************************************************/
 
+// #define CALL_SSL_MAIN 0
+
 #include "rtpthrd.h"
 #include "rtpnet.h"
 #include "rtpterm.h"
@@ -27,6 +29,7 @@
 #include "rtpscnv.h"
 #include "httpsrv.h"
 #include "htmlutils.h"
+#ifdef CALL_SSL_MAIN
 #include "rtpssl.h"
 #include "httpauth.h"
 #include <openssl/ssl.h>
@@ -35,6 +38,7 @@ static HTTPAuthContext Authctx;
 static HTTPAuthContext *pAuthctx;
 static RTP_HANDLE sslContext = 0;
 static unsigned sslEnabled  = 1;
+#endif
 
 
  /* A context structure for keeping our application data
@@ -65,7 +69,7 @@ static  HTTPExampleServerCtx ExampleServerCtx;
 
 /* These values may be changed to customize the server. */
 #define DEMO_SERVER_NAME "EBS WEB SERVER" /* Server name that we use to format the Server property in a standard html reponse header */
-#define DEMO_WWW_ROOT "../../../htdocs"        /* Path used as the root for all content loads from disk. */
+#define DEMO_WWW_ROOT "../../htdocs"        /* Path used as the root for all content loads from disk. */
 #define DEMO_WWW_FILE "index.html"        /* The default file name to use if a user accesses the server providing no file name. Index.htm is recommended. */
 
 static unsigned char
@@ -133,12 +137,12 @@ static void http_demo_write_vcontent_bytes(HTTPSession *session, char **pContent
 static HTTP_INT32 http_demo_count_vcontent_bytes(char **pContent);
 
 /*---------------------------------------------------------------------------*/
-
+#ifdef CALL_SSL_MAIN
 int  HTTPS_ServerProcessOneRequest (RTP_SSL_CONTEXT sslContext,
                                     HTTPServerContext *server,
                                     HTTP_INT32 timeoutMsec);
 
-
+#endif
 
 /* Main entry point for the web server application.
 	A callable web server.
@@ -198,10 +202,13 @@ int http_advanced_server_demo(void)
 	/* Now loop continuously process one request per loop. */
 	for (;;)
 	{
-//        if (HTTPS_ServerProcessOneRequest (sslContext,
-//                                            &ExampleServerCtx.httpServer,
-//                                            1000*60) < 0)
+#ifdef CALL_SSL_MAIN
+        if (HTTPS_ServerProcessOneRequest (sslContext,
+                                            &ExampleServerCtx.httpServer,
+                                            1000*60) < 0)
+#else
 		if (HTTP_ServerProcessOneRequest (&ExampleServerCtx.httpServer, 1000*60) < 0)
+#endif
 		{
 			/* Print an idle counter every minute the server is not accessed */
 			idle_count += 1;
@@ -251,6 +258,8 @@ static char *ajax_content[]  = {
 static int demo_form_cb (void *userData, HTTPServerRequestContext *ctx, HTTPSession *session, HTTPRequest *request, RTP_NET_ADDR *clientAddr);
 static int ajax_update_demo_cb (void *userData, HTTPServerRequestContext *ctx, HTTPSession *session, HTTPRequest *request, RTP_NET_ADDR *clientAddr);
 
+static int smb_client_cb (void *userData, HTTPServerRequestContext *ctx, HTTPSession *session, HTTPRequest *request, RTP_NET_ADDR *clientAddr);
+
 
 /* Start or restart the server. Called when the application is first run and when callback handlers
    request a restart of the server because parametrs have been changed */
@@ -289,7 +298,7 @@ static int http_server_demo_restart(void)
 			1,                // httpMajorVersion
 			1,                // httpMinorVersion
 			pDefaultIpAddr,
-			80,  // 80,               // 80  ?? Use the www default port
+			8080,  // 80,               // 80  ?? Use the www default port
 			DEMO_IPVERSION,   // ipversion type(4 or 6)
 			0,                // allowKeepAlive
 			ExampleServerCtx.connectCtxArray,  // connectCtxArray
@@ -330,6 +339,26 @@ static int http_server_demo_restart(void)
 		return -1;
 	rtp_printf("Post Handlers for demo_ajax_setval_submit, demo_ajax_command_submit and demo_ajax_getval have been assigned\n");
 
+
+	/* Create an ajax applet that accepts value updates from a browser via POST and returns a modified
+       value (multiplied by 4) in a reply.
+       The client applications Html5Demo.html and Html4Demo.html use the reply data  from "\\demo_ajax_getval"
+       to update their screens.
+	*/
+     /*  Add a url that accepts a command in string form. The value is posted by the SmbClientConsole.html when a command request is made. */
+	if (HTTP_ServerAddPostHandler(&ExampleServerCtx.httpServer, "\\smb_client_command", smb_client_cb, (void *)"process_command") < 0)
+		return -1;
+	rtp_printf("Post Handler for smb_client command has been assigned\n");
+     /*  Add a url that returns accumulated output to a "window" */
+	if (HTTP_ServerAddPostHandler(&ExampleServerCtx.httpServer, "\\smb_client_console", smb_client_cb, (void *)"get_console_output") < 0)
+		return -1;
+	rtp_printf("Post Handler for smb_client console has been assigned\n");
+
+
+     /*  Add a url that returns accumulated output to a "window" */
+	if (HTTP_ServerAddPostHandler(&ExampleServerCtx.httpServer, "\\smb_client_json", smb_client_cb, (void *)"get_send_json") < 0)
+		return -1;
+	rtp_printf("Post Handler for smb_client console has been assigned\n");
 
 	/* Create a virtual default web page that we'll use as a sign on instructional page. */
 	if (HTTP_ServerAddPath(&ExampleServerCtx.httpServer, DEMO_CONFIGURE_URL, 1, (HTTPRequestHandler)_Demo_UrlRequestHandler,
@@ -576,7 +605,7 @@ int MyHeaderCallback(
 	printf("Name == %s: Value ==:%s\n", name, value);
 	return 0;
 }
-#define TEST_JSON 1
+#define TEST_JSON 0
 #if (TEST_JSON)
 #define MAXVALS 200
 static int value_array[MAXVALS];
@@ -623,22 +652,26 @@ static int ajax_update_demo_cb (void *userData, HTTPServerRequestContext *ctx, H
 int processing_configure = 0;
 HTTPServerContext *server = ctx->server;
 HTTP_CHAR formName[256];
-
+HTTP_CHAR cgiArgs[256];
+    cgiArgs[0]=0;
 	{
 		HTTP_CHAR *p;
 		p = rtp_strstr(request->target, "?");
 		if (p)
 		{
 			rtp_strncpy(formName, request->target, (int)(p-request->target));
-			formName[(int) (p-request->target)]=0;
+			formName[(int)(p-request->target)]=0;
+			rtp_strcpy(cgiArgs, p+1);
 		}
 		else
 		{
 			rtp_strcpy(formName, request->target);
 		}
 	}
+	rtp_printf("request->target  == %s\n", request->target);
 	rtp_printf("formName from URL == %s\n", formName);
 	rtp_printf("user date  == %s\n", userData);
+	rtp_printf("cgiArgs  == %s\n", cgiArgs);
 
 	switch (request->methodType)
 	{
@@ -751,6 +784,254 @@ HTTP_CHAR formName[256];
 }
 
 
+
+static int smb_cli_shell_proc_web(NVPairList *pPairList, char *outbuffer, int outbufferLength)
+{
+   int i;
+   int r=-1;
+   NVPair *pCommand,*pMedia;
+
+   rtp_strcpy(outbuffer, "Command Not Found");
+   return 1;
+
+   pCommand = HTTP_GetNameValuePairAssociative (pPairList,"command");
+   pMedia = HTTP_GetNameValuePairAssociative (pPairList,"media");
+#if (0)
+   // media (remote|local) and
+   if (!pCommand)
+   {
+       return -1;
+   }
+   {
+       for (i =0; web_cmds[i]; i++)
+       {
+           if (rtp_strnicmp(pCommand->value, web_cmds[i], rtp_strlen(web_cmds[i])) == 0)
+           {
+               r = web_functions[i](pPairList,outbuffer, outbufferLength);
+               break;
+           }
+       }
+   }
+#endif
+   r = 1;
+   return r;
+}
+
+//=====================================
+
+static char SmbCliConsoleOutput[4092];
+static int SmbCliConsoleLength;
+static char SmbCliConsoleInput[256];
+static int SmbCliConsoleInputLength;
+
+void HttpConsoleOutPut(char *output)
+{
+int linelen = rtp_strlen(output);
+//    if (output[linelen]=='\n')
+//    {
+//        linelen--;
+//    }
+    if (linelen + SmbCliConsoleLength < sizeof(SmbCliConsoleOutput))
+    {
+        rtp_strcpy(&SmbCliConsoleOutput[SmbCliConsoleLength], output);
+        SmbCliConsoleLength += linelen;
+    }
+}
+
+static void HttpSetConsoleInPut(char *input)
+{
+   rtp_strcpy(SmbCliConsoleInput,input);
+}
+char *HttpGetConsoleInPut(char *inBuf)
+{
+   if (SmbCliConsoleInput[0])
+   {
+    rtp_strcpy(inBuf, SmbCliConsoleInput);
+    SmbCliConsoleInput[0]=0;
+   }
+   else
+   rtp_thread_sleep(100);
+}
+
+
+
+extern int smb_cli_shell_proc_web(NVPairList *pPairList, char *outbuffer, int outbufferLength);
+
+static int smb_client_cb (void *userData, HTTPServerRequestContext *ctx, HTTPSession *session, HTTPRequest *request, RTP_NET_ADDR *clientAddr)
+{
+int processing_configure = 0;
+HTTPServerContext *server = ctx->server;
+HTTP_CHAR formName[256];
+HTTP_CHAR cgiArgs[256];
+HTTP_CHAR tempBuffer[256];
+NVPairList PairList;
+NVPair PairArray[10];
+
+    cgiArgs[0]=0;
+	{
+		HTTP_CHAR *p;
+		p = rtp_strstr(request->target, "?");
+		if (p)
+		{
+			rtp_strncpy(formName, request->target, (int)(p-request->target));
+			formName[(int)(p-request->target)]=0;
+			rtp_strcpy(cgiArgs, p+1);
+		}
+		else
+		{
+			rtp_strcpy(formName, request->target);
+		}
+	}
+	rtp_printf("request->target  == %s\n", request->target);
+	rtp_printf("formName from URL == %s\n", formName);
+	rtp_printf("user date  == %s\n", userData);
+	rtp_printf("cgiArgs  == %s\n", cgiArgs);
+
+	HTTP_InitNameValuePairList (&PairList, PairArray, ARRAYSIZE(PairArray));
+
+	switch (request->methodType)
+	{
+		case HTTP_METHOD_GET:
+		{
+			HTTPResponse response;
+			HTTP_UINT8 *respBuffer=0;
+			HTTP_INT32 respBufferSize = 4096;
+			int escapedlen = HTML_UnEscapeFormString(tempBuffer,cgiArgs);
+			int consumed = HTTP_LoadNameValuePairs (tempBuffer, escapedlen, &PairList);
+            int error=0;
+            int n,r;
+            NVPair *pCommand,*pMedia;
+
+            pCommand = HTTP_GetNameValuePairAssociative (&PairList,"command");
+            pMedia = HTTP_GetNameValuePairAssociative (&PairList,"media");
+
+			/* Allocate a buffer for sending response. */
+			respBuffer = (HTTP_UINT8 *) rtp_malloc(respBufferSize);
+			*respBuffer = 0;
+
+            r = smb_cli_shell_proc_web(&PairList, respBuffer, respBufferSize);
+
+#if (0)
+
+            if (rtp_strcmp(pMedia->value,"remote")==0)
+            {
+            int r;
+                rtp_printf("Procesing %s\n", pCommand->value);
+                r = smb_cli_shell_proc_web(&PairList, respBuffer, respBufferSize);
+                rtp_printf("Result == %d\n", r);
+                return (HTTP_REQUEST_STATUS_DONE);
+
+                if (rtp_strcmp(pCommand->value,"diropen"))
+                {
+                // HEREHERE - Need to do a dir and json encode results
+                }
+                else if (rtp_strcmp(pCommand->value,"stat"))
+                {
+
+                }
+                else
+                    rtp_printf("Reguest = %s\n", "Not found");
+            }
+            for (n=0; HTTP_GetNameValuePairIndexed (&PairList,n); n++)
+            {
+			    HTTP_UINT8 *name = (HTTP_UINT8 *)  HTTP_GetNameValuePairIndexed(&PairList,n)->name;
+			    HTTP_UINT8 *value = (HTTP_UINT8 *) HTTP_GetNameValuePairIndexed(&PairList,n)->value;
+    			if (name && value)
+    			{
+                    rtp_printf("Got %s=%s\n", name,value);
+                }
+            }
+//			sprintf(respBuffer,"<html><body><b>Systick [%d] <br>PanelValue [%d]</b></body></html>",rtp_get_system_msec(),  "I am console data for you <br>");
+			if (rtp_strcmp(formName,"/smb_client_console")== 0)
+			{
+                if (*SmbCliConsoleOutput)
+                {
+			        sprintf(respBuffer,"%s", SmbCliConsoleOutput);
+			        SmbCliConsoleLength=0;
+			        SmbCliConsoleOutput[0]=0;
+                }
+                else
+			        sprintf(respBuffer,"%s", "neep");
+            }
+            else
+            {
+			    sprintf(respBuffer,"%d  Unknown request %s<br>",rtp_get_system_msec(),  request->target);
+            }
+#endif
+            if (r < 0)
+            {
+                HTTP_ServerSendError (ctx, session, 400, respBuffer);
+            }
+            else
+            {
+			    HTTP_ServerInitResponse(ctx, session, &response, 200, "OK");
+			    HTTP_ServerSetDefaultHeaders(ctx, &response);
+			    HTTP_SetResponseHeaderStr(&response, "Content-Type", "text/html");
+			    HTTP_SetResponseHeaderInt(&response, "Content-Length", rtp_strlen(respBuffer));
+			    HTTP_WriteResponse(session, &response);
+			    HTTP_Write(session, respBuffer, rtp_strlen(respBuffer));
+			    HTTP_WriteFlush(session);
+			    rtp_free(respBuffer);
+			    HTTP_FreeResponse(&response);
+            }
+			return (HTTP_REQUEST_STATUS_DONE);
+		}
+		case HTTP_METHOD_POST:
+        {
+			HTTP_INT32 bytesRead;
+			HTTP_UINT8 tempBufferRaw[256];
+			HTTP_UINT8 tempBuffer[256];
+			ctx->userCallback = MyHeaderCallback;
+			if (HTTP_ReadHeaders(session, _HTTP_ServerHeaderCallback, ctx, tempBufferRaw,sizeof(tempBufferRaw)) >= 0)
+			{
+				bytesRead = HTTP_Read(session,tempBufferRaw,sizeof(tempBufferRaw));
+				if (bytesRead > 0)
+				{
+					NVPairList PairList;
+                    NVPair PairArray[10];
+                    PNVPair pSetValPair;
+                    int escapedlen,consumed;
+					tempBufferRaw[bytesRead]=0;
+					/* & characters are converted to zeroes for the convenience of name value pair parser. */
+					escapedlen = HTML_UnEscapeFormString(tempBuffer,tempBufferRaw);
+                    HTTP_InitNameValuePairList (&PairList, PairArray, 10);
+                    consumed = HTTP_LoadNameValuePairs (tempBuffer, escapedlen, &PairList);
+
+                    pSetValPair=HTTP_GetNameValuePairAssociative (&PairList,"AjaxSetVal");
+
+					if (pSetValPair)
+					{
+						if (userData && rtp_strcmp((HTTP_CHAR *)userData, "process_command")==0)
+						{
+						    rtp_printf("Execute Command: %s\n", pSetValPair->value);
+                            HttpSetConsoleInPut(pSetValPair->value);
+                        }
+						else if (userData) // && rtp_strcmp((HTTP_CHAR *)userData, "set_value")==0)
+                        {
+						    rtp_printf("Unkown Command: %s\n", (HTTP_CHAR *)userData);
+                        }
+					}
+				}
+				{
+					HTTPResponse response;
+					HTTP_ServerInitResponse(ctx, session, &response, 201, "OK");
+					HTTP_WriteResponse(session, &response);
+					{
+					char buff[80];
+						rtp_sprintf(buff,"%s\n","Yeah you did it");
+					HTTP_Write(session, buff, rtp_strlen(buff));
+					}
+//					HTTP_Write(session, tempBufferRaw, rtp_strlen(tempBufferRaw));
+					HTTP_WriteFlush(session);
+					HTTP_FreeResponse(&response);
+				}
+			}
+            return (HTTP_REQUEST_STATUS_DONE);
+       }
+		default:
+			return (HTTP_REQUEST_STATUS_DONE);
+    }
+}
 
 
 
@@ -1007,7 +1288,7 @@ What is your name: <input type=\"text\" name=\"user\" /><br>\
 <input type=\"submit\" value=\"Submit\" /><br>\
 </form> ";
 
-#if (1)
+#ifdef CALL_SSL_MAIN
 /*
  * ExampleSSLServer.c
  *
@@ -1825,7 +2106,6 @@ void ssl_client_main(char *Suite/*'a','c','n'*/, int sslmethod/* 1,2,3,4 */,char
   trace(1,"\nProgam terminating");
 
 }
-
 #endif
 
 #endif

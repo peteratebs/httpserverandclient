@@ -155,7 +155,7 @@ void HTTP_InitHeaderNameValuePairList ( PNVHeaderList pNVHeaderList,            
                                         )
 {
     CLEARMEMPOBJ(pNVHeaderList);
-    pNVHeaderList->Bufferbase=Bufferbase;
+    pNVHeaderList->Bufferbase=(HTTP_CHAR *)Bufferbase;
     pNVHeaderList->BufferSize=len;
     pNVHeaderList->Filter = Filter;
     pNVHeaderList->FilterArgs = FilterArgs;
@@ -269,7 +269,7 @@ HTTP_INT32 HTTP_LoadNameValuePairs ( HTTP_CHAR* str,                  /**     Po
         if (pNVPairList->len == pNVPairList->MaxPairs)
             return -1;
         pNVPairList->Items[pNVPairList->len].name = pNVPairList->Items[pNVPairList->len].value = 0;
-        nThisByte = HTTP_ParseNameValuePairByReference (str,	 &pNVPairList->Items[pNVPairList->len].name, &pNVPairList->Items[pNVPairList->len].value);
+        nThisByte = HTTP_ParseNameValuePairByReference (str,	(const HTTP_CHAR **) &pNVPairList->Items[pNVPairList->len].name,(const HTTP_CHAR **) &pNVPairList->Items[pNVPairList->len].value);
         if (nThisByte == 0)
             break;
 		str += nThisByte;
@@ -358,45 +358,33 @@ HTTP_INT32 HTTP_ParseNameValuePairByReference (
 {
 	const HTTP_CHAR* strBegin = str;
 	*name = *value = 0;
-
-	while (IS_WHITESPACE(str[0]))
-	{
+	while (IS_WHITESPACE(str[0])||(str[0]==';')||(str[0]=='?'))
 		str++;
-	}
-
 	*name = str;
 	while (str[0] && str[0] != '=')
 		str++;
-
-	while (str[0] && str[0] != '=')
-		str++;
-
 	if (str[0] != '=')
-	{
 		return (0);
-	}
 	str[0] = 0;
 	str++;
-
 	while (IS_WHITESPACE(str[0]))
-	{
 		str++;
-	}
 	if (str[0] == '\'' || str[0] == '"')
-	{
 		str++;
-	}
 	*value = str;
-	while (str[0] && str[0] != '\'' && str[0] != '"')
-	{
+	while (str[0] && str[0] != ';'&& str[0] != '\'' && str[0] != '"')
 		str++;
-	}
-
 	if (str[0] == '\'' || str[0] == '"')
 	{
 	    str[0] = 0;
 		str++;
 	}
-	str ++;		/* Skip the terminating zero */
+	if (str[0] == ';')
+	{
+	    str[0] = 0;
+		str++;
+	}
+    else
+	    str++;		/* Skip the terminating zero */
 	return (str - strBegin);
 }

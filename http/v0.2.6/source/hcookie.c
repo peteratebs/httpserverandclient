@@ -20,7 +20,7 @@
 
 #include "hcookie.h"
 #include "rtpstdup.h"
-#include "rtputil.h"
+// #include "rtputil.h"
 #include "rtpdutil.h"
 
 /*****************************************************************************/

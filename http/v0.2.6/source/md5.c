@@ -32,7 +32,7 @@
  */
 
 // ********************************************************************
-// MD5 
+// MD5
 // ********************************************************************
 /*
  ***********************************************************************
@@ -52,7 +52,7 @@
 /* forward declaration   */
 static void Transform(HTTP_MD5_UINT4 *buf, HTTP_MD5_UINT4 *in);
 
-static HTTP_MD5_UINT8 PADDING[64] = 
+static HTTP_MD5_UINT8 PADDING[64] =
 {
   0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -129,13 +129,13 @@ unsigned int i, ii;
   mdContext->i[0] += ((HTTP_MD5_UINT4)inLen << 3);
   mdContext->i[1] += ((HTTP_MD5_UINT4)inLen >> 29);
 
-  while (inLen--) 
+  while (inLen--)
   {
     /* add new character to buffer, increment mdi */
     mdContext->in[mdi++] = *inBuf++;
 
     /* transform if necessary */
-    if (mdi == 0x40) 
+    if (mdi == 0x40)
 	{
       for (i = 0, ii = 0; i < 16; i++, ii += 4)
 	  {
@@ -168,7 +168,7 @@ unsigned int padLen;
   mdi = (int)((mdContext->i[0] >> 3) & 0x3F);
 
   /* pad out to 56 mod 64 */
-  padLen = (mdi < 56) ? (56 - mdi) : (120 - mdi);
+  padLen = (unsigned int) ((mdi < 56) ? (56 - mdi) : (120 - mdi));
   HTTP_MD5_Update (mdContext, PADDING, padLen);
 
   /* append length in bits and transform */
@@ -180,7 +180,7 @@ unsigned int padLen;
   Transform(mdContext->buf, in);
 
   /* store buffer in digest */
-  for (i = 0, ii = 0; i < 4; i++, ii += 4) 
+  for (i = 0, ii = 0; i < 4; i++, ii += 4)
   {
     mdContext->digest[ii] = (HTTP_MD5_UINT8)(mdContext->buf[i] & 0xFF);
     mdContext->digest[ii+1] =

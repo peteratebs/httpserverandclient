@@ -1220,7 +1220,7 @@ static int __HTTP_ServerHandleRequest (HTTPServerRequestContext *ctx,
                     bytesRead=EBSMIN(bufferSize,bytesleft);
                     rtp_memcpy(buffer,pdata,bytesRead);
                     bytesleft -= bytesRead;
-					pdata += bytesRead; 
+					pdata += bytesRead;
                 }
                 else
 				    bytesRead = rtp_file_read(fd, buffer, bufferSize);
