@@ -70,8 +70,8 @@ int  HTTPS_ClientSessionInit (
 		if (HTTP_ClientSessionInitEx (
 				clientContext,
 				&clientSession->session,
-				_HTTPS_ClientRead,
-				_HTTPS_ClientWrite
+				(HTTPStreamReadFn)_HTTPS_ClientRead,
+				(HTTPStreamWriteFn)_HTTPS_ClientWrite
 			) >= 0)
 		{
 			clientSession->validateCert = validateCert;
